@@ -1,17 +1,20 @@
 # VranjicReact
 
-This project contains a simple ASP.NET Core REST API and a lightweight React frontend. The API uses Entity Framework Core with SQL Server. The React files live in `client/` and can be copied to the repository root via `./build.sh` for FTP deployment.
+This project contains an ASP.NET Core REST API and a simple React front end. The API lives in `api/` and serves the static React files from `api/wwwroot`.
 
-## Building the API
+## Build workflow
 
 ```bash
-cd VranjicApi
-# restore and build (requires access to NuGet)
-dotnet build
+# build the React app and publish the API
+./build.sh
 ```
 
-## Building the frontend
+The script restores Node packages in `client/`, builds the React bundle into `api/wwwroot/`, and publishes the API into `publish/` for FTP deployment.
+
+To build only the API:
 
 ```bash
-./build.sh
+cd api
+# restore and build (requires NuGet packages)
+dotnet build
 ```

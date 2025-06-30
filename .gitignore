@@ -416,3 +416,11 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Custom ignores for build workflow
+api/bin/
+api/obj/
+api/wwwroot/
+client/node_modules/
+client/dist/
+publish/

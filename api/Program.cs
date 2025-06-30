@@ -13,6 +13,8 @@ builder.Services.AddDbContext<VranjicContext>(options =>
 var app = builder.Build();
 
 app.UseHttpsRedirection();
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.MapGet("/novosti", async (VranjicContext db) => await db.News.ToListAsync());
 app.MapPost("/novosti", async (News news, VranjicContext db) => { db.News.Add(news); await db.SaveChangesAsync(); return Results.Created($"/novosti/{news.Id}", news); });
