@@ -1,0 +1,6 @@
+@VranjicApi_HostAddress = http://localhost:5268
+
+GET {{VranjicApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
