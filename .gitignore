@@ -1,0 +1,153 @@
+# Local documentation, agent instructions and prompts
+*.[mM][dD]
+*.[mM][dD][xX]
+*[pP][rR][oO][mM][pP][tT]*
+.agents/
+.co[d]ex/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Node / React build output
+/VranjicReact.Server/wwwroot/
+node_modules/
+dist/
+dist-ssr/
+build/
+.next/
+out/
+.vite/
+.vite-inspect/
+tmp/
+temp/
+.cache/
+coverage/
+.nyc_output/
+storybook-static/
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+
+# Package manager state
+.npm/
+.pnpm-store/
+.yarn/*
+!.yarn/patches/
+!.yarn/plugins/
+!.yarn/releases/
+!.yarn/sdks/
+!.yarn/versions/
+
+# Environment files
+.env
+.env.*
+!.env.example
+*.local
+appconfig.json
+
+# Host-specific configuration and credentials (keep safe development defaults tracked)
+appsettings.Production.json
+appsettings.Staging.json
+appsettings.*.local.json
+secrets.json
+*.pubxml
+*.pubxml.user
+*.publishsettings
+*.pfx
+*.p12
+*.pem
+*.key
+
+# Editor settings
+.vscode/*
+.idea/
+*.code-workspace
+*.sw?
+
+# OS metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# .NET / Visual Studio build output
+.vs/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+[Dd]ebug*/
+[Rr]elease*/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+[Pp]ublish/
+TestResult*/
+[Bb]uild[Ll]og.*
+artifacts/
+*.obj
+*.iobj
+*.ipdb
+*.pdb
+*.pch
+*.tmp
+*.tmp_proj
+*.tlog
+*.rsp
+*_wpftmp.csproj
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.sbr
+*.tlb
+*.tli
+*.tlh
+Generated\ Files/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.userprefs
+mono_crash.*
+
+# Tooling caches
+_ReSharper*/
+*_ReSharper.*
+*.DotSettings.user
+*.sln.iml
+.cr/personal/
+.ionide/
+.localhistory/
+.vshistory/
+.history/
+
+# Packages & test artifacts
+packages/
+[Tt]est[Rr]esult*/
+BenchmarkDotNet.Artifacts/
+MigrationBackup/
+healthchecksdb
+
+# NuGet packages
+*.nupkg
+*.snupkg
+
+# Database files
+*.dbmdl
+*.bak
+*.mdf
+*.ldf
+*.ndf
+*.bacpac
+
+# Azure local run output
+ASALocalRun/
