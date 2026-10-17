@@ -94,14 +94,11 @@ describe('TranslationEditor', () => {
         expect(save).toHaveBeenCalledWith({ title: 'Hrvatski naslov', translations: [{ language: 'en', version: 'version-one', delete: true }] });
     });
 
-    it('supports adding another language without changing the content model', async () => {
-        vi.mocked(translateText).mockResolvedValue({ text: 'Deutscher Titel' });
+    it('shows English without exposing arbitrary language controls', () => {
         render(<Harness />);
-        fireEvent.change(screen.getByLabelText('Oznaka novog jezika'), { target: { value: 'de' } });
-        fireEvent.click(screen.getByText('Dodaj jezik'));
-        fireEvent.click(screen.getByText('Prevedi na DE'));
-        await waitFor(() => expect(screen.getByLabelText('Naslov (DE)')).toHaveValue('Deutscher Titel'));
-        expect(translateText).toHaveBeenCalledWith('Hrvatski naslov', 'de', 'Bearer test', expect.any(AbortSignal));
+        expect(screen.getByLabelText('Jezik prijevoda')).toHaveValue('en');
+        expect(screen.queryByLabelText('Oznaka novog jezika')).not.toBeInTheDocument();
+        expect(screen.queryByText('Dodaj jezik')).not.toBeInTheDocument();
     });
 
     it('does not send empty or oversized fields', () => {

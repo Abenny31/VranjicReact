@@ -24,7 +24,6 @@ export default function TranslationEditor({ source, saved = [], edits, onChange,
     const { language: uiLanguage } = useLanguage();
     const en = uiLanguage === 'en';
     const [language, setLanguage] = useState('en');
-    const [newLanguage, setNewLanguage] = useState('');
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [notice, setNotice] = useState<string | null>(null);
@@ -92,15 +91,6 @@ export default function TranslationEditor({ source, saved = [], edits, onChange,
                     {languages.map(code => <option key={code} value={code}>{code.toUpperCase()}</option>)}
                 </select>
             </label>
-            <label className="text-sm">{en ? 'New language code' : 'Oznaka novog jezika'}
-                <input value={newLanguage} maxLength={16} placeholder="de" onChange={event => setNewLanguage(event.target.value.toLowerCase())} className="ml-2 w-24 rounded border p-2" />
-            </label>
-            <button type="button" className="rounded border px-3 py-2 text-sm" onClick={() => {
-                if (!/^[a-z]{2,3}(-[a-z0-9]{2,8})?$/.test(newLanguage) || newLanguage === 'hr') {
-                    setError(en ? 'Enter a language code other than hr.' : 'Unesite oznaku jezika različitu od hr.'); return;
-                }
-                setLanguage(newLanguage); setNewLanguage(''); setError(null);
-            }}>{en ? 'Add language' : 'Dodaj jezik'}</button>
             <button type="button" onClick={() => void translate()} disabled={busy || !Object.values(source).some(text => text?.trim())} className="rounded bg-blue-600 px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">
                 {busy ? (en ? 'Translating…' : 'Prevođenje…') : language === 'en' ? (en ? 'Translate to English' : 'Prevedi na engleski') : `${en ? 'Translate to' : 'Prevedi na'} ${language.toUpperCase()}`}
             </button>

@@ -27,6 +27,7 @@ namespace VranjicReact.Server.Data
         public DbSet<BlogPostSource> BlogPostSources => Set<BlogPostSource>();
         public DbSet<AreaModeratorAssignment> AreaModeratorAssignments => Set<AreaModeratorAssignment>();
         public DbSet<ContentModerationAction> ContentModerationActions => Set<ContentModerationAction>();
+        public DbSet<ErrorLog> ErrorLogs => Set<ErrorLog>();
 
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
@@ -55,6 +56,21 @@ namespace VranjicReact.Server.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<ErrorLog>(entity =>
+            {
+                // Leave the schema unspecified, like the existing Identity/content tables.
+                entity.ToTable("ErrorLog");
+                entity.Property(e => e.TraceId).HasMaxLength(128);
+                entity.Property(e => e.RequestMethod).HasMaxLength(16);
+                entity.Property(e => e.Path).HasMaxLength(1024);
+                entity.Property(e => e.UserId).HasMaxLength(450);
+                entity.Property(e => e.ExceptionType).HasMaxLength(512);
+                entity.Property(e => e.Message).HasMaxLength(4000);
+                entity.Property(e => e.ExceptionDetails).HasMaxLength(32768);
+                entity.HasIndex(e => e.CreatedAtUtc);
+                entity.HasIndex(e => e.TraceId);
+            });
 
             ContentTranslationMapping.Configure<News>(builder, "NewsTranslations");
             ContentTranslationMapping.Configure<BlogPost>(builder, "BlogPostTranslations");

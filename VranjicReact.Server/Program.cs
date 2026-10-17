@@ -25,6 +25,8 @@ if (string.IsNullOrWhiteSpace(connectionString))
 
 builder.Services.AddDbContext<VranjicContext>(options =>
     options.UseSqlServer(connectionString));
+builder.Services.AddSingleton<ErrorLogRedactor>();
+builder.Services.AddScoped<IErrorLogWriter, DatabaseErrorLogWriter>();
 
 builder.Services.AddIdentityCore<IdentityUser>(options =>
     {
@@ -81,7 +83,8 @@ builder.Services.AddHttpClient<ITranslationService, AzureTranslationService>(cli
     .RedactLoggedHeaders(_ => true);
 builder.Services.AddHealthChecks().AddCheck<DatabaseReadinessCheck>("database", tags: ["ready"]);
 
-builder.Services.AddAuthentication()
+builder.Services
+    .AddAuthentication(IdentityConstants.BearerScheme)
     .AddBearerToken(IdentityConstants.BearerScheme);
 
 builder.Services.AddAuthorizationBuilder()
@@ -120,6 +123,9 @@ if (allowedOrigins.Length > 0)
 }
 
 var app = builder.Build();
+
+// Must wrap authentication, controller activation, action execution and response serialization.
+app.UseMiddleware<DatabaseErrorLoggingMiddleware>();
 
 if (dotEnvLoadResult.IsLoaded)
 {

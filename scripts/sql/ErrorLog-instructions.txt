@@ -1,0 +1,75 @@
+ErrorLog - upute
+================
+
+Migracija: 20261016151133_AddErrorLog
+
+Razvoj / test
+------------
+Nije potrebno uvoditi novu shemu. EF model nema hardkodirani naziv sheme.
+Nakon provjere da konfiguracija pokazuje na razvojnu bazu, pokreni iz korijena repozitorija:
+
+  dotnet ef database update --project VranjicReact.Server
+
+Ova naredba primjenjuje sve nedostajuce migracije. Ako ih ima vise, prvo ih pregledaj.
+
+Produkcija
+----------
+1. Napravi backup baze.
+2. U SSMS odaberi powerhousehr_vranjic i spoji se kao korisnik aplikacije
+   (powerhousehr_admin, default schema powerhousehr_admin).
+3. Izvrsi cijeli AddErrorLog.sql. Skripta provjerava bazu i zadanu shemu,
+   dodaje samo ErrorLog i dva indeksa te evidentira novu EF migraciju.
+   Ostale migracije ne primjenjuje. Ako vec postoji tablica bez pripadajuceg
+   zapisa migracije, skripta ce stati; nemoj brisati tablicu bez provjere.
+4. Objavi novi backend koristeci postojeci postupak objave cijelog paketa.
+   Samo dodavanje tablice ne ukljucuje logiranje u staroj verziji aplikacije.
+   Migracija se ne izvrsava automatski pri pokretanju aplikacije.
+5. Ponovi prijavu i procitaj zadnje zapise:
+
+  SELECT TOP (50)
+      Id, CreatedAtUtc, TraceId, RequestMethod, Path, UserId,
+      StatusCode, ExceptionType, Message, ExceptionDetails
+  FROM [powerhousehr_admin].[ErrorLog]
+  ORDER BY Id DESC;
+
+Vrijeme u tablici je UTC. HTTP 500 odgovor sadrzi traceId za povezivanje sa zapisom.
+Tablica nema javni API; cita se SQL pristupom. Nije vezana stranim kljucevima
+uz korisnike ili sadrzaj i ne mijenja ovlasti.
+
+Opseg i ogranicenja
+-------------------
+Biljeze se neobradjene iznimke unutar HTTP obrade, ukljucujuci aktivaciju
+kontrolera i serijalizaciju odgovora. Rucno vraceni status 500 bez iznimke,
+greske pokretanja procesa, ocekivani 4xx odgovori i odspajanja klijenta
+nisu dio ovog mehanizma.
+
+Ne prikupljaju se tijela zahtjeva, query stringovi, zaglavlja ni kolacici.
+Koristi se predlozak rute kada je dostupan, a ne stvarne vrijednosti parametara.
+Iz poruka iznimke uklanjaju se konfigurirane tajne i prepoznati oblici
+vjerodajnica. Proizvoljni tekst iznimke ipak treba pregledati prije dijeljenja.
+Detalji iznimke se ne vracaju kroz HTTP odgovor.
+
+Upis koristi zaseban DbContext izvan transakcije neuspjelog zahtjeva,
+uz ogranicenje trajanja. Ako baza nije dostupna, tablica nedostaje ili korisnik
+nema pravo INSERT, zapis se ne moze spremiti. U tom slucaju ostaje standardni
+aplikacijski log i genericki HTTP 500; ne pokusava se rekurzivno logirati u bazu.
+
+Provjera migracije bez primjene:
+  dotnet ef migrations has-pending-model-changes --project VranjicReact.Server --no-build
+
+Rezultati provjera (16. 10. 2026.)
+--------------------------------
+- Backend build: prolazi bez upozorenja.
+- Novi testovi: 13 testova bez SQL veze i 1 integracijski test sa stvarnim
+  upisom nakon uspjesne prijave i namjernog pada aktivacije AccountControllera.
+- Cijeli backend skup s DFB_RUN_SQL_TESTS=1: 190 prolazi, 1 pada.
+  Postojeci Users_FilterBeforePagination_ReturnRolesWithoutIdentitySecrets_AndFindOlderModerators
+  ocekuje 6 polja, dok postojeci UserListItemDto ima i sedmo polje nickname.
+  Taj test i DTO nisu mijenjani u ovom zadatku.
+- EF model nema promjena izvan nove migracije; produkcijski SQL prolazi ScriptDom parser.
+- Frontend typecheck i lint prolaze. Vite build prolazi uz upozorenje za chunk > 500 kB.
+- Frontend testovi nisu ponavljani: prethodni npm test bio je blokiran sandbox
+  EPERM rename greskom, a ponovno izvodenje izvan sandboxa nije bilo odobreno.
+  Lokalna naredba za njih je npm test u direktoriju vranjicreact.client.
+- Produkcijska migracija i objava nisu izvrsene. Testovi su koristili privremene
+  LocalDB baze; razvojna baza nije mijenjana.
